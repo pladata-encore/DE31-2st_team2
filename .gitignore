@@ -1,0 +1,28 @@
+# Python virtual environments
+venv/
+env/
+*.venv/
+
+# Python distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Python bytecode
+*.pyc
+*.pyo
+__pycache__/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# PyCharm
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Pytest
+.pytest_cache/
+pytest.ini

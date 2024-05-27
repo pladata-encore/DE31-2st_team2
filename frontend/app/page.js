@@ -93,10 +93,15 @@ export default function Home() {
     //     graphController();
     //   });
     // if (res.code = "error") {
-    if (true) {
+    //   errorHandler();
+    // } else if (res.code = "ok") {
+    //   // { lat: 37.3665, lng: 126.878 }
+    //   graphController("APT_NAME_001", 0);
+    //   mapController(37.3665, 126.878);
+    // }
+    if (search === '') {
       errorHandler();
-      // } else if (res.code = "ok") {
-    } else if (true) {
+    } else if (search === '1') {
       // { lat: 37.3665, lng: 126.878 }
       graphController("APT_NAME_001", 0);
       mapController(37.3665, 126.878);
@@ -105,8 +110,6 @@ export default function Home() {
 
   function graphController(apt_name, res) {
     // draw graph
-    console.log(apt_name, res);
-    console.log(chartRef.current);
     // change chart title to apt_name
     setChartOptions({
       responsive: true,
@@ -127,7 +130,7 @@ export default function Home() {
   }
   useEffect(() => {
     if (chartRef.current) {
-      chartRef.current.update(); 
+      chartRef.current.update();
     }
   }, [chartOptions, chartData]);
 

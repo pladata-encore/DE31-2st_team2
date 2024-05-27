@@ -1,16 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 // import openstreetmap api
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-
-const OpenStreetMap = () => {
+const OpenStreetMap = ({mapRef}) => {
   // declare center and setCenter at seoul
-  const [center, setCenter] = useState({ lat: 37.5665, lng: 126.978 });
-  const ZOOM_LEVEL = 13;
-  const mapRef = useRef(null);
-
+  const ZOOM_LEVEL = 17;
+  const center = { lat: 37.5665, lng: 126.978 };
   // declare map container and tile layer display size to 100%
   const mapContainerStyle = {
     width: "100%",
@@ -29,8 +26,6 @@ const OpenStreetMap = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        
-
       </MapContainer>
     </>
   )

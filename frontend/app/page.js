@@ -2,6 +2,7 @@
 
 import styles from "./page.module.css";
 import React, { useEffect, useState, useRef } from "react";
+import jQuery from "jquery";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -78,37 +79,78 @@ export default function Home() {
     setIsClient(true);
   }, []);
 
-  function errorHandler() {
-    // change Text of apt_name to "ERROR: NOT FOUND"
-    graphController("ERROR: NOT FOUND", 0);
-    mapController(37.5665, 126.978);
-  }
+  function getCookies(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+  } // end of getCookies
+
+  function errorHandler(code) {
+    if (code === "syntax") {
+      // change Text of apt_name to "ERROR: SYNTAX ERROR"
+      graphController("ERROR: SYNTAX ERROR", 0);
+      mapController(37.5665, 126.978);
+    } else if (code === "notfound") {
+      // change Text of apt_name to "ERROR: NOT FOUND"
+      graphController("ERROR: NOT FOUND", 0);
+      mapController(37.5665, 126.978);
+    }
+  } // end of errorHandler
 
   function searchHandler() {
-    // fetch data from api
-    // fetch(`http://localhost:3000/api/search?search=${search}`)
-    //   .then((res) => res.json())
-    //   .then((res) => {
-    //     setData(res);
-    //     graphController();
-    //   });
-    // if (res.code = "error") {
-    //   errorHandler();
-    // } else if (res.code = "ok") {
-    //   // { lat: 37.3665, lng: 126.878 }
-    //   graphController("APT_NAME_001", 0);
-    //   mapController(37.3665, 126.878);
-    // }
     if (search === '') {
-      errorHandler();
-    } else if (search === '1') {
-      // { lat: 37.3665, lng: 126.878 }
-      graphController("APT_NAME_001", 0);
-      mapController(37.3665, 126.878);
+      errorHandler("notfound");
+    } else {
+      var split_search_data = search.split(' ');
+      if (split_search_data.length != 3) {
+        errorHandler("syntax");
+        return;
+      }
+      // POST request to api server
+      // var url = 'http://localhost:8000/api/predict';
+      var url = 'https://48ec-221-151-189-183.ngrok-free.app/api/predict/';
+      var data = {
+        'gugun': split_search_data[0],
+        'road_name': split_search_data[1],
+        'road_number': split_search_data[2]
+      };
+
+      // get csrf token
+      var csrftoken = getCookies('csrftoken');
+
+
+      // evade CORS policy and fetch data
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Failed to fetch');
+        }
+      })
+      .then(data => {
+        console.log(data);
+        graphController(data['apt_nm'], data['data']);
+        mapController(data['lat'], data['lng']);
+      })
+      .catch(error => {
+        console.error(error);
+        errorHandler("notfound");
+      });
+
+
     }
-  }
+  } // end of searchHandler
 
   function graphController(apt_name, res) {
+    console.log("input graph data", apt_name, res)
     // draw graph
     // change chart title to apt_name
     setChartOptions({
@@ -127,7 +169,21 @@ export default function Home() {
       },
     });
     // change chart data to res
-  }
+    let res_dataset = [];
+    var res_values = Object.values(res);
+    for (let i = 0; i < res.length; i++) {
+      res_dataset.push({
+        label: Object.keys(res_values[i]) + '평방미터(m^2)',
+        data: [10000 + (i*1000),11000 + (i*1000),12000 + (i*1000),13000 + (i*1000),14000 + (i*1000),15000 + (i*1000)],  //res_values[i],
+        borderColor: borderColorTemplate[i%6],
+      });
+    }
+    setChartData({
+      labels: ['+1', '+2', '+3', '+4', '+5', '+6'],
+      datasets: res_dataset,
+    });
+
+  } // end of graphController
   useEffect(() => {
     if (chartRef.current) {
       chartRef.current.update();
@@ -135,8 +191,9 @@ export default function Home() {
   }, [chartOptions, chartData]);
 
   function mapController(lat, lng) {
+    console.log("input map data", lat, lng)
     setCenter({ lat: lat, lng: lng });
-  }
+  } // end of mapController
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.flyTo(center, 17, { duration: 1.5 });

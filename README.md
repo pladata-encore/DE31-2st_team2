@@ -12,25 +12,22 @@
 .
 ├── seoul_real_estate
 │   ├── 2014매매.csv
-│   ├── 2014임대.csv
 │   ├── ~
-│   ├── 2024매매.csv
 │   └── 2024임대.csv
 ├── frontend
 │   ├── app
 │   │   ├── module
 │   │   │   └── openstreetmap.js
 │   │   ├── layout.js
-│   │   ├── page.js
-│   │   └── globals.css
+│   │   └── page.js
 │   └── package.json
 ├── django
-│   ├── model
-│   │   └── model.h5
-│   ├── api
-│   │   ├── urls.py
-│   │   └── views.py
-│   └── manage.py
+│   └── real_estate
+│       ├── config
+│       ├── model
+│       │   └── model.h5
+│       ├── api
+│       └── manage.py
 ├── preprocessing.ipynb
 ├── README.md
 └── requirements.txt
@@ -49,16 +46,25 @@ npm install
 ```
 4. Django 서버 실행
 ```bash
-cd django
+cd django/real_estate
 python manage.py runserver
 ```
 5. Frontend 서버 빌드 후 실행
 ```bash
 cd frontend
+npm install
 npm run build
 npm run start
 ```
 
+## 기능
+- 사용자로부터 입력받은 주소("행정구 도로명주소 길번호")를 통해 해당 주소의 실거래가를 예측한다.
+- 사용자로부터 입력받은 주소를 지도에 표시한다.
+- 예측된 실거래가를 차트로 표시한다.
+
+![image](/public/Animation.gif)
+
 ## 사용 자료
 - 국가통계포털 지방지표(2014~2023)
 - 국토교통부 실거래가 공개시스템(2014~2024)
+- 공간융합 빅데이터 플랫폼 아파트 기준정보(2024.02)

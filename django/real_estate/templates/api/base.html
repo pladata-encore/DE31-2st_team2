@@ -1,0 +1,30 @@
+<html>
+
+<body>
+    <h1>검색하기</h1>
+    <form action="predict/" method="POST">
+      {% csrf_token %}
+      <div>
+        <label for="gugun">구</label>
+        <input type="text" name="gugun" id="gugun">
+      </div>
+      <div>
+        <label for="road_name">도로명</label>
+        <input type="text" name="name"road_name id="road_name">
+      </div>
+      <div>
+        <label for="road_number">도로번호</label>
+        <input type="number" name="road_number" id="road_number">
+      </div>
+      <br>
+      <input type="submit" value="제출">
+    </form>
+    {% if result %}
+        <h2>Result:</h2>
+        <pre>{{ result|pprint }}</pre>
+    {% elif error %}
+        <h2>Error:</h2>
+        <p>{{ error }}</p>
+    {% endif %}    
+  </body>
+  </html>
